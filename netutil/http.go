@@ -150,6 +150,8 @@ func (hc *HttpClient) Header(header map[string]string) *HttpClient {
 		hcc.request.Header.Set(k, v)
 	}
 
+	// fmt.Printf("header:%+v\n", hcc.request.Header)
+
 	return hcc
 }
 
