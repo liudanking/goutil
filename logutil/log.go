@@ -102,7 +102,7 @@ func (l *Logger) log(lvl level, format string, args ...interface{}) {
 func (l *Logger) callerInfo(depth int) string {
 	pc, file, lineno, ok := runtime.Caller(depth)
 	if !ok {
-		return "no call info found"
+		return "no caller info found"
 	}
 
 	return fmt.Sprintf("%s %s:%d", filepath.Base(file), filepath.Base(runtime.FuncForPC(pc).Name()), lineno)
