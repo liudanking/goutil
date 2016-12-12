@@ -14,8 +14,8 @@ import (
 
 var (
 	// Map for te various codes of colors
-	colors map[level]string
-	lvls   map[level]string
+	colors map[Level]string
+	lvls   map[Level]string
 )
 
 // Color numbers for stdout
@@ -30,10 +30,10 @@ const (
 	White
 )
 
-type level int
+type Level int
 
 const (
-	DEBUG level = iota
+	DEBUG Level = iota
 	INFO
 	NOTICE
 	WARNING
@@ -42,7 +42,7 @@ const (
 )
 
 func init() {
-	colors = map[level]string{
+	colors = map[Level]string{
 		CRITICAL: colorString(Magenta),
 		ERROR:    colorString(Red),
 		WARNING:  colorString(Yellow),
@@ -50,7 +50,7 @@ func init() {
 		INFO:     colorString(White),
 		DEBUG:    colorString(Cyan),
 	}
-	lvls = map[level]string{
+	lvls = map[Level]string{
 		CRITICAL: "CRIT",
 		ERROR:    "EROR",
 		WARNING:  "WARN",
@@ -69,12 +69,16 @@ func colorString(color int) string {
 var defaultLogger *Logger
 
 type Logger struct {
-	lvl    level
+	lvl    Level
 	format string
 	output io.Writer
 }
 
-func NewLogger(lvl level, format string, output io.Writer) *Logger {
+func SetDefaultLogger(logger *Logger) {
+	defaultLogger = logger
+}
+
+func NewLogger(lvl Level, format string, output io.Writer) *Logger {
 	return &Logger{
 		lvl:    lvl,
 		format: format,
@@ -82,14 +86,19 @@ func NewLogger(lvl level, format string, output io.Writer) *Logger {
 	}
 }
 
-func (l *Logger) log(lvl level, format string, args ...interface{}) {
+func (l *Logger) log(lvl Level, format string, args ...interface{}) {
 	if l.lvl > lvl {
 		return
 	}
 
 	msg := fmt.Sprintf(format, args...)
-	formatedMsg := fmt.Sprintf("%s %s %s ▶ %s",
-		time.Now().Format("2006-01-02 15:04:05"), lvls[lvl], l.callerInfo(3), msg)
+	formatedMsg := fmt.Sprintf("%s %s goroutine:%s/%d %s ▶ %s",
+		time.Now().Format("2006-01-02 15:04:05"),
+		lvls[lvl],
+		l.getGoroutineId(),
+		runtime.NumGoroutine(),
+		l.callerInfo(3),
+		msg)
 
 	buf := &bytes.Buffer{}
 	buf.Write([]byte(colors[lvl]))
@@ -106,6 +115,14 @@ func (l *Logger) callerInfo(depth int) string {
 	}
 
 	return fmt.Sprintf("%s %s:%d", filepath.Base(file), filepath.Base(runtime.FuncForPC(pc).Name()), lineno)
+}
+
+func (l *Logger) getGoroutineId() string {
+	b := make([]byte, 64)
+	b = b[:runtime.Stack(b, false)]
+	b = bytes.TrimPrefix(b, []byte("goroutine "))
+	b = b[:bytes.IndexByte(b, ' ')]
+	return string(b)
 }
 
 // Critical logs a message at a Critical Level
