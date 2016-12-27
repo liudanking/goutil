@@ -43,3 +43,12 @@ func ContainAny(s string, ss []string) bool {
 
 	return false
 }
+
+func EqualAny(s string, ss []string) bool {
+	for _, item := range ss {
+		if s == item {
+			return true
+		}
+	}
+	return false
+}
