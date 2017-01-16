@@ -166,6 +166,7 @@ func (hc *HttpClient) UserAgent(ua string) *HttpClient {
 	return hcc
 }
 
+// Proxy always deep clone a new http client
 func (hc *HttpClient) Proxy(proxy func(*http.Request) (*url.URL, error)) *HttpClient {
 	hcc := hc.clone()
 	if tr, ok := hc.client.Transport.(*http.Transport); ok {
@@ -173,7 +174,13 @@ func (hc *HttpClient) Proxy(proxy func(*http.Request) (*url.URL, error)) *HttpCl
 		trNew := *tr
 		// set proxy
 		trNew.Proxy = proxy
-		hc.client.Transport = &trNew
+
+		// copy client
+		hcc.client = &http.Client{
+			Transport: &trNew,
+			Timeout:   hcc.client.Timeout,
+		}
+
 	} else {
 		hcc.err = errors.New("assert transport type failed")
 	}
