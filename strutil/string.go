@@ -52,3 +52,9 @@ func EqualAny(s string, ss []string) bool {
 	}
 	return false
 }
+
+func EncodeRuneToStr(r rune) string {
+	p := make([]byte, 4)
+	n := utf8.EncodeRune(p, r)
+	return string(p[:n])
+}
