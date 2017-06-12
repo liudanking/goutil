@@ -33,11 +33,18 @@ func init() {
 			return net.DialTimeout(network, addr, 5*time.Second)
 		},
 	}
-	defaultHttpClient = &HttpClient{
-		client: &http.Client{
-			Transport: tr,
-			Timeout:   45 * time.Second,
-		},
+
+	client := &http.Client{
+		Transport: tr,
+		Timeout:   45 * time.Second,
+	}
+
+	defaultHttpClient = NewHttpClient(client)
+}
+
+func NewHttpClient(client *http.Client) *HttpClient {
+	return &HttpClient{
+		client: client,
 	}
 }
 
