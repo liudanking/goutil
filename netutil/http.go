@@ -1,6 +1,7 @@
 package netutil
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -146,6 +147,14 @@ func (hc *HttpClient) DoByte() ([]byte, int, error) {
 
 	data, err := ioutil.ReadAll(rsp.Body)
 	return data, rsp.StatusCode, err
+}
+
+func (hc *HttpClient) DoJSON(rsp interface{}) ([]byte, error) {
+	data, _, err := hc.DoByte()
+	if err != nil {
+		return nil, err
+	}
+	return data, json.Unmarshal(data, rsp)
 }
 
 func (hc *HttpClient) Header(header map[string]string) *HttpClient {
