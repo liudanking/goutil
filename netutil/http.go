@@ -149,6 +149,15 @@ func (hc *HttpClient) DoByte() ([]byte, int, error) {
 	return data, rsp.StatusCode, err
 }
 
+func (hc *HttpClient) DoJSONRaw(rsp interface{}) ([]byte, error) {
+	data, _, err := hc.DoByte()
+	if err != nil {
+		return nil, err
+	}
+
+	return data, json.Unmarshal(data, rsp)
+}
+
 func (hc *HttpClient) DoJSON(rsp interface{}) ([]byte, error) {
 	data, _, err := hc.DoByte()
 	if err != nil {
