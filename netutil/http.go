@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -94,6 +95,17 @@ func (hc *HttpClient) RequestForm(method, addr string, params map[string]interfa
 		request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	default:
 		err = errors.New("method not supported")
+	}
+
+	hc.request = request
+	hc.err = err
+	return hc
+}
+
+func (hc *HttpClient) JSONBody(method, addr string, body io.Reader) *HttpClient {
+	request, err := http.NewRequest(method, addr, body)
+	if err == nil {
+		request.Header.Set("Content-Type", "application/json")
 	}
 
 	hc.request = request
