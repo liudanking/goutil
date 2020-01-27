@@ -92,7 +92,7 @@ func (hc *HttpClient) RequestForm(method, addr string, params map[string]interfa
 		}
 	case "PUT", "POST":
 		request, err = http.NewRequest(method, addr, strings.NewReader(values.Encode()))
-		request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		request.Header.Set("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
 	default:
 		err = errors.New("method not supported")
 	}
