@@ -147,6 +147,7 @@ func (hc *HttpClient) map2Values(m map[string]interface{}) url.Values {
 }
 
 func (hc *HttpClient) DoByte() ([]byte, int, error) {
+
 	if err := hc.valid(); err != nil {
 		return nil, 0, err
 	}

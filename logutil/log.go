@@ -93,7 +93,7 @@ func (l *Logger) log(lvl Level, format string, args ...interface{}) {
 
 	msg := fmt.Sprintf(format, args...)
 	formatedMsg := fmt.Sprintf("%s %s goroutine:%s/%d %s ▶ %s",
-		time.Now().Format("2006-01-02 15:04:05"),
+		time.Now().Format("2006-01-02 15:04:05.000"),
 		lvls[lvl],
 		l.getGoroutineId(),
 		runtime.NumGoroutine(),
