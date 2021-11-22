@@ -34,6 +34,7 @@ func init() {
 		Dial: func(network, addr string) (conn net.Conn, err error) {
 			return net.DialTimeout(network, addr, 5*time.Second)
 		},
+		Proxy: http.ProxyFromEnvironment,
 	}
 
 	client := &http.Client{
